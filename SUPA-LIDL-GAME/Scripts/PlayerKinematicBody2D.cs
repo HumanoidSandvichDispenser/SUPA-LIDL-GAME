@@ -14,7 +14,9 @@ namespace SupaLidlGame
 
         private AnimationNodeStateMachinePlayback _animationState = null;
 
-        private Utils.PlayerStats _playerStats = null;
+        private Utils.PlayerStats _playerStats;
+
+        private BoundingBoxes.Damagebox _swordDamageBox;
 
         public PlayerInputState InputState { get; set; } = PlayerInputState.None;
 
@@ -34,7 +36,12 @@ namespace SupaLidlGame
             _animationState = _animationTree.Get("parameters/playback") as
                 AnimationNodeStateMachinePlayback;
             _playerStats = GetNode("PlayerStats") as Utils.PlayerStats;
-            System.Diagnostics.Debug.WriteLine(GetNode<Utils.PlayerStats>("PlayerStats") == null);
+            _swordDamageBox = GetNode<BoundingBoxes.Damagebox>(
+                    "CharacterSprite/SwordSprite/Damagebox");
+
+            // set the sword properties when we load player stats
+            _swordDamageBox.Damage = _playerStats.SwordDamage;
+            _swordDamageBox.Knockback = _playerStats.SwordKnockback;
 
             _characterSprite.FlipH = false;
             _animationTree.Active = true;
@@ -159,6 +166,12 @@ namespace SupaLidlGame
             {
                 System.Diagnostics.Debug.WriteLine($"You lost {oldHealth - newHealth} health!");
             }
+        }
+
+        public void _on_PlayerStats_SwordStatsChanged(Utils.PlayerStats stats)
+        {
+            _swordDamageBox.Damage = stats.SwordDamage;
+            _swordDamageBox.Knockback = stats.SwordKnockback;
         }
     }
 }

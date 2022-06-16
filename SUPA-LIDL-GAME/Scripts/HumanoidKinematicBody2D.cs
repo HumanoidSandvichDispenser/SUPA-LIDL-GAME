@@ -34,13 +34,16 @@ namespace SupaLidlGame
         [Export]
         public bool IsFlyingBody { get; set; } = false;
 
+        [Export]
+        public float Mass { get; set; } = 1;
+
         public bool IsMovementFrozen { get; protected set; } = false; // LUL
 
-        /**
-         *  Calculated by direction times acceleration factor plus acceleration
-         *  due to gravity. Friction is not considered in the final
-         *  acceleration. forsenScoots
-         */
+        /// <summary>
+        /// Calculated by direction times acceleration factor plus acceleration
+        /// due to gravity. Friction is not considered in the final
+        /// acceleration. forsenScoots
+        /// </summary>
         public Vector2 Acceleration => _direction * AccelerationCoefficient;
 
         public Vector2 Gravity => GRAVITY_CONSTANT * Vector2.Down;
@@ -48,19 +51,13 @@ namespace SupaLidlGame
         public Vector2 Direction
         {
             get => _direction;
-            set
-            {
-                _direction = value;
-            }
+            set => _direction = value;
         }
 
         public Vector2 Velocity
         {
             get => _velocity;
-            set
-            {
-                _velocity = value;
-            }
+            set => _velocity = value;
         }
 
         // Called when the node enters the scene tree for the first time.
@@ -92,8 +89,13 @@ namespace SupaLidlGame
                 }
             }
 
-            // apply gravity
-            if (!IsFlyingBody)
+            // apply friction
+            if (IsFlyingBody)
+            {
+                Vector2 finalVelocity = new Vector2(_velocity.x, 0);
+                _velocity.y = _velocity.MoveToward(finalVelocity, FrictionCoefficient * delta).y;
+            }
+            else // apply gravity normally
             {
                 _velocity.y += Gravity.y * delta;
                 _velocity.y = Math.Max(_velocity.y, -TERMINAL_VELOCITY);
@@ -123,13 +125,16 @@ namespace SupaLidlGame
             return velocity;
         }
 
-        public void ApplyImpulse(Vector2 force)
+        /// <summary>
+        /// Applies an impulse. Velocity will be calculated based on impulse
+        /// divided by the body's mass.
+        /// </summary>
+        public void ApplyImpulse(Vector2 impulse)
         {
-            // Impulse J = Ft = kg m/s^2 * s = kg m/s = mv
-            // v = J/m
-            _velocity += force;
-            Debug.WriteLine(force);
-            Debug.WriteLine(Velocity);
+            if (Mass > 0)
+            {
+                _velocity += impulse / Mass;
+            }
         }
     }
 }

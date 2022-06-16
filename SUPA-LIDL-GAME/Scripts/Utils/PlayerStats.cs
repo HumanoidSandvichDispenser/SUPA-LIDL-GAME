@@ -6,19 +6,45 @@ namespace SupaLidlGame.Utils
     {
         protected float _swordRange = 100;
 
+        protected float _swordDamage = 20;
+
+        protected float _swordKnockback = 150;
+
         [Export]
         public float SwordRange
         {
             get => SwordRange;
             set
             {
-                float oldValue = _swordRange;
                 _swordRange = value;
-                EmitSignal("SwordRangeChanged", oldValue, _swordRange);
+                EmitSignal("SwordStatsChanged", this);
             }
         }
 
+        [Export]
+        public float SwordDamage
+        {
+            get => _swordDamage;
+            set
+            {
+                _swordDamage = value;
+                EmitSignal("SwordStatsChanged", this);
+            }
+        }
+
+        [Export]
+        public float SwordKnockback
+        {
+            get => _swordKnockback;
+            set
+            {
+                _swordKnockback = value;
+                EmitSignal("SwordStatsChanged", this);
+            }
+        }
+
+
         [Signal]
-        public delegate void SwordRangeChanged(float oldSwordRange, float newSwordRange);
+        public delegate void SwordStatsChanged(PlayerStats stats);
     }
 }

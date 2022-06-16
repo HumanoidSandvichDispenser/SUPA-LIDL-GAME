@@ -369,6 +369,20 @@ tracks/5/keys = {
 "update": 1,
 "values": [ false, true ]
 }
+tracks/6/type = "method"
+tracks/6/path = NodePath("CharacterSprite/SwordSprite/Damagebox")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0.25 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "ResetIgnoreList"
+} ]
+}
 
 [sub_resource type="Animation" id=45]
 resource_name = "PlayerWalk"
@@ -502,7 +516,6 @@ collision_layer = 2
 script = ExtResource( 1 )
 
 [node name="PlayerStats" parent="KinematicBody2D" instance=ExtResource( 3 )]
-Godmode = true
 
 [node name="Camera2D" type="Camera2D" parent="KinematicBody2D"]
 current = true
@@ -527,8 +540,10 @@ offset = Vector2( 0, -4 )
 hframes = 4
 
 [node name="Damagebox" parent="KinematicBody2D/CharacterSprite/SwordSprite" instance=ExtResource( 5 )]
-collision_layer = 0
+collision_layer = 16
 collision_mask = 8
+Knockback = 150.0
+OwnerBodyPath = "../../.."
 
 [node name="CollisionShape2D" parent="KinematicBody2D/CharacterSprite/SwordSprite/Damagebox" index="0"]
 position = Vector2( 12, 0 )
@@ -577,5 +592,6 @@ initial_velocity_random = 1.0
 color_ramp = SubResource( 90 )
 
 [connection signal="HealthChanged" from="KinematicBody2D/PlayerStats" to="KinematicBody2D" method="_on_PlayerStats_HealthChanged"]
+[connection signal="SwordStatsChanged" from="KinematicBody2D/PlayerStats" to="KinematicBody2D" method="_on_PlayerStats_SwordStatsChanged"]
 
 [editable path="KinematicBody2D/CharacterSprite/SwordSprite/Damagebox"]
