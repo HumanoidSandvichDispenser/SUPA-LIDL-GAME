@@ -14,22 +14,24 @@ namespace SupaLidlGame.BoundingBoxes
         [Export]
         public float Knockback { get; set; } = 0;
 
-        [Export]
-        public KinematicBody2D OwnerBody { get; set; }
-
-        [Export]
         /// <summary>
-        /// Relative path to the owner's (attacker's) node. If OwnerBody is
+        /// The KinematicBody2D node inflicting damage through this damagebox
+        /// </summary>
+        [Export]
+        public KinematicBody2D InflictorBody { get; set; }
+
+        /// <summary>
+        /// Relative path to the owner's (attacker's) node. If InflictorBody is
         /// null, then it will look for a node based on the specified path.
         /// </summary>
-        public string OwnerBodyPath { get; set; }
+        [Export]
+        public string InflictorBodyPath { get; set; }
 
         public override void _Ready()
         {
-            if (OwnerBody is null)
+            if (InflictorBody is null)
             {
-                OwnerBody = GetNode<KinematicBody2D>(OwnerBodyPath);
-                System.Diagnostics.Debug.WriteLine(OwnerBody == null);
+                InflictorBody = GetNode<KinematicBody2D>(InflictorBodyPath);
             }
         }
 
@@ -44,9 +46,9 @@ namespace SupaLidlGame.BoundingBoxes
                     {
                         Damage = Damage,
                         KnockbackForce = Knockback,
-                        Owner = OwnerBody,
+                        Owner = InflictorBody,
                     };
-                    hitbox.InflictDamage(Damage, OwnerBody, Knockback);
+                    hitbox.InflictDamage(Damage, InflictorBody, Knockback);
                 }
             }
         }
