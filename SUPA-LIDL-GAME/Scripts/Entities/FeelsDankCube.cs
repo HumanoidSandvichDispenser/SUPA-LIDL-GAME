@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using SupaLidlGame.Entities.AI;
 
 namespace SupaLidlGame.Entities
 {
@@ -7,19 +8,20 @@ namespace SupaLidlGame.Entities
     {
         public override void _Ready()
         {
+            Behavior = AIType.Basic;
             base._Ready();
         }
 
         public override void Die()
         {
+            IsDead = true;
+            // TODO: Death animation
             QueueFree();
         }
 
-        public override void Think()
+        public override void _PhysicsProcess(float delta)
         {
-            PlayerKinematicBody2D player = GlobalState.Player;
-            Vector2 moveTo = player.GlobalPosition - GlobalPosition;
-            _direction = moveTo.Normalized();
+            base._PhysicsProcess(delta);
         }
     }
 }

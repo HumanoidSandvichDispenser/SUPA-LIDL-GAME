@@ -1,8 +1,6 @@
 using Godot;
 using System;
 using System.Diagnostics;
-using SupaLidlGame.State;
-using SupaLidlGame.Extensions;
 
 namespace SupaLidlGame
 {
@@ -16,13 +14,13 @@ namespace SupaLidlGame
 
         protected bool _isOnFloor = false;
 
-        protected HumanoidState _humanoidState = HumanoidState.Idle;
-
         protected Vector2 _direction = Vector2.Zero;
 
         protected Vector2 _velocity = Vector2.Zero;
 
         protected Vector2 _previousVelocity = Vector2.Zero;
+
+        protected KinematicCollision2D _kinematicCollision;
 
         public float AccelerationCoefficient { get; set; } = 768;
 
@@ -46,7 +44,8 @@ namespace SupaLidlGame
         /// due to gravity. Friction is not considered in the final
         /// acceleration. forsenScoots
         /// </summary>
-        public Vector2 Acceleration => _direction * AccelerationCoefficient;
+        public Vector2 Acceleration => _direction.Normalized() *
+                AccelerationCoefficient;
 
         public Vector2 Gravity => GRAVITY_CONSTANT * Vector2.Down;
 
@@ -65,7 +64,7 @@ namespace SupaLidlGame
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
-            _humanoidState = HumanoidState.Move;
+
         }
 
         // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -81,39 +80,23 @@ namespace SupaLidlGame
 
             _previousVelocity = _velocity;
 
-            // apply movement from input
-            if (!IsMovementFrozen)
-            {
-                _velocity = Accelerate(_velocity, delta);
-                //_velocity.x = Direction.x * MaxSpeed;
-
-                if (Direction.y > 0)
-                {
-                    if (_isOnFloor && !IsFlyingBody)
-                    {
-                        snap = Vector2.Zero;
-                        _velocity.y = Vector2.Up.y * JUMP_VELOCITY;
-                    }
-                }
-            }
-
-            // apply friction
             if (IsFlyingBody)
             {
-                Vector2 finalVelocity = new Vector2(_velocity.x, 0);
-                _velocity.y = _velocity.MoveToward(finalVelocity, FrictionCoefficient * delta).y;
+                _velocity = Fly(delta, _velocity);
+                snap = Vector2.Zero;
             }
-            else // apply gravity normally
+            else
             {
-                _velocity.y += Gravity.y * delta;
-                _velocity.y = Math.Max(_velocity.y, -TERMINAL_VELOCITY);
+                _velocity = Walk(delta, _velocity, ref snap);
             }
 
             _velocity = MoveAndSlideWithSnap(_velocity, snap, Vector2.Up, stopOnSlope: true);
+            _kinematicCollision = GetLastSlideCollision();
 
             _isOnFloor = IsOnFloor();
         }
 
+        [Obsolete]
         protected Vector2 Accelerate(Vector2 velocity, float delta)
         {
             // accelerate and clamp to max speed
@@ -129,6 +112,73 @@ namespace SupaLidlGame
                 velocity.x = velocity.MoveToward(finalVelocity, FrictionCoefficient * delta).x;
             }
 
+            return velocity;
+        }
+
+        protected Vector2 Walk(float delta, Vector2 velocity, ref Vector2 snap)
+        {
+            // accelerate in the x direction
+            if (Direction.x != 0)
+            {
+                velocity.x += Acceleration.x * delta;
+
+                // clamp
+                velocity.x = Math.Max(Math.Min(velocity.x, MaxSpeed), -MaxSpeed);
+            }
+            else
+            {
+                Vector2 finalVelocity = new Vector2(0, velocity.y);
+                velocity.x = velocity.MoveToward(finalVelocity, FrictionCoefficient * delta).x;
+            }
+
+            // accelerate in the y direction from jumping
+            if (Direction.y > 0)
+            {
+                if (_isOnFloor)
+                {
+                    snap = Vector2.Zero;
+                    velocity.y = Vector2.Up.y * JUMP_VELOCITY;
+                }
+            }
+
+            // accelerate in the y direction due to gravity
+            velocity.y += Gravity.y * delta;
+            velocity.y = Math.Max(velocity.y, -TERMINAL_VELOCITY);
+            return velocity;
+        }
+
+        protected Vector2 Fly(float delta, Vector2 velocity)
+        {
+            // accelerate in the x and y directions
+
+            // if we are traveling faster than max velocity, there is probably
+            // an external force acting upon us.
+            if (velocity.LengthSquared() > Math.Pow(MaxSpeed, 2) + 1)
+            {
+                // we have this statement in both conditions because we only
+                // want to add the velocity AFTER the comparison but BEFORE
+                // decelerating.
+                //velocity += Acceleration * delta;
+
+                // decelerate to max speed
+                velocity = velocity.MoveToward(velocity.Normalized() * MaxSpeed,
+                        FrictionCoefficient * delta);
+
+                // if velocity is slightly larger than MaxSpeed, then clamp the velocity
+                if (velocity.LengthSquared() < Math.Pow(MaxSpeed, 2) + 1)
+                {
+                    velocity = velocity.Clamped(MaxSpeed);
+                }
+            }
+
+            // otherwise, we move in the direction we want to move and clamp it
+            // to max speed (so it doesn't accelerate faster than max speed)
+            else
+            {
+                velocity += Acceleration * delta;
+                velocity = velocity.Clamped(MaxSpeed);
+            }
+            
             return velocity;
         }
 
@@ -151,7 +201,7 @@ namespace SupaLidlGame
         }
 
         /// <summary>
-        /// Kills the enemy entitiy
+        /// Kills the humanoid entitiy
         /// </summary>
         public virtual void Die()
         {

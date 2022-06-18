@@ -1,9 +1,14 @@
 using Godot;
+using SupaLidlGame.Exceptions;
+using SupaLidlGame.Entities.AI;
 
 namespace SupaLidlGame.Entities
 {
     public abstract class Enemy : HumanoidKinematicBody2D
     {
+        [Export]
+        public AIType Behavior { get; set; } = AIType.Basic;
+
         protected Utils.Stats _stats;
 
         protected AnimationPlayer _animationPlayer;
@@ -38,7 +43,14 @@ namespace SupaLidlGame.Entities
         {
             if (!IsDead)
             {
-                Think();
+                switch (Behavior)
+                {
+                    case AIType.Basic:
+                        ThinkBasic(delta);
+                        break;
+                    case AIType.JumpKing:
+                        break;
+                }
             }
         }
 
@@ -95,6 +107,34 @@ namespace SupaLidlGame.Entities
             QueueFree();
         }
 
-        public abstract void Think();
+        protected virtual void ThinkBasic(float delta)
+        {
+            // move towards the player
+            PlayerKinematicBody2D player = GlobalState.Player;
+            Vector2 moveTo = player.GlobalPosition - GlobalPosition;
+            Direction = moveTo.Normalized();
+        }
+        
+        protected virtual void ThinkJumpKing(float delta)
+        {
+            
+        }
+
+        protected virtual void ThinkBounce(float delta)
+        {
+            throw new System.NotImplementedException();
+            KinematicCollision2D collision = GetLastSlideCollision();
+
+            if (collision != null)
+            {
+                Vector2 bounce = _previousVelocity.Bounce(collision.Normal);
+                ApplyImpulse(bounce.Normalized() * MaxSpeed * 2);
+            }
+        }
+
+        protected virtual void Think(float delta) =>
+                throw new BehaviorNotImplementedException(
+                "Implement custom behavior with `override void Think()`. " +
+                "Overriden method should not call the base method.");
     }
 }

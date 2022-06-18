@@ -30,6 +30,10 @@ namespace SupaLidlGame
 
         public override void _Ready()
         {
+            if (GlobalState.Player != null)
+                throw new Exception("A Player entity already exists in the game!");
+            GlobalState.Player = this;
+
             _characterSprite = GetNode("CharacterSprite") as Sprite;
             _animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
             _animationTree = GetNode("AnimationTree") as AnimationTree;
@@ -172,6 +176,7 @@ namespace SupaLidlGame
         {
             _swordDamageBox.Damage = stats.SwordDamage;
             _swordDamageBox.Knockback = stats.SwordKnockback;
+            
         }
     }
 }

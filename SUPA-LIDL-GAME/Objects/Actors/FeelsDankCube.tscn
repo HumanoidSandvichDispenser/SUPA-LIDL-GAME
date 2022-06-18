@@ -1,15 +1,10 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Objects/BoundingBoxes/EnemyHitbox.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Objects/Utils/Stats.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Entities/FeelsDankCube.cs" type="Script" id=3]
 [ext_resource path="res://Assets/Enemies/FeelsDankCube.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Shaders/Flashing.gdshader" type="Shader" id=5]
 [ext_resource path="res://Assets/Enemies/FeelsDankCube-first-frame.png" type="Texture" id=6]
-
-[sub_resource type="ShaderMaterial" id=18]
-shader = ExtResource( 5 )
-shader_param/active = false
 
 [sub_resource type="Animation" id=6]
 resource_name = "Hit"
@@ -72,15 +67,11 @@ tracks/1/keys = {
 "values": [ false ]
 }
 
-[sub_resource type="ShaderMaterial" id=7]
-shader = ExtResource( 5 )
-shader_param/active = true
-
 [sub_resource type="AnimationNodeAnimation" id=10]
 animation = "FeelsDankCubeHit"
 
 [sub_resource type="AnimationNodeAnimation" id=11]
-animation = "FeelsDankCubeIdle"
+animation = "Idle"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=12]
 
@@ -89,12 +80,12 @@ switch_mode = 2
 auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachine" id=8]
-states/FeelsDankCubeHit/node = SubResource( 10 )
-states/FeelsDankCubeHit/position = Vector2( 675, 61 )
-states/FeelsDankCubeIdle/node = SubResource( 11 )
-states/FeelsDankCubeIdle/position = Vector2( 391, 61 )
-transitions = [ "FeelsDankCubeIdle", "FeelsDankCubeHit", SubResource( 12 ), "FeelsDankCubeHit", "FeelsDankCubeIdle", SubResource( 13 ) ]
-start_node = "FeelsDankCubeIdle"
+states/Hit/node = SubResource( 10 )
+states/Hit/position = Vector2( 675, 61 )
+states/Idle/node = SubResource( 11 )
+states/Idle/position = Vector2( 412, 69 )
+transitions = [ "Idle", "Hit", SubResource( 12 ), "Hit", "Idle", SubResource( 13 ) ]
+start_node = "Idle"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=9]
 
@@ -342,11 +333,10 @@ shader_param/gravity = null
 shader_param/sprite = ExtResource( 6 )
 
 [node name="FeelsDankCube" type="KinematicBody2D"]
-material = SubResource( 18 )
 script = ExtResource( 3 )
-MaxSpeed = 32.0
+MaxSpeed = 64.0
 IsFlyingBody = true
-Mass = 0.25
+Behavior = 1
 
 [node name="Stats" parent="." instance=ExtResource( 2 )]
 
@@ -357,11 +347,11 @@ anims/Idle = SubResource( 3 )
 anims/RESET = SubResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 7 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 6
+frame = 7
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 8 )
