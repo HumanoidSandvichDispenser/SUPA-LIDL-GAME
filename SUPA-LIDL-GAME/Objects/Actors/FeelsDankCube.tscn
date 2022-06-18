@@ -344,7 +344,9 @@ shader_param/sprite = ExtResource( 6 )
 [node name="FeelsDankCube" type="KinematicBody2D"]
 material = SubResource( 18 )
 script = ExtResource( 3 )
+MaxSpeed = 32.0
 IsFlyingBody = true
+Mass = 0.25
 
 [node name="Stats" parent="." instance=ExtResource( 2 )]
 
@@ -360,7 +362,6 @@ scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 6
-frame = 1
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 8 )

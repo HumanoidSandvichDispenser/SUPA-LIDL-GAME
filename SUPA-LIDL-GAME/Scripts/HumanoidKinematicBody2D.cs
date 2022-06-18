@@ -37,6 +37,8 @@ namespace SupaLidlGame
         [Export]
         public float Mass { get; set; } = 1;
 
+        public bool IsDead { get; set; } = false;
+
         public bool IsMovementFrozen { get; protected set; } = false; // LUL
 
         /// <summary>
@@ -69,6 +71,12 @@ namespace SupaLidlGame
         // Called every frame. 'delta' is the elapsed time since the previous frame.
         public override void _PhysicsProcess(float delta)
         {
+            if (IsDead)
+            {
+                base._PhysicsProcess(delta);
+                return;
+            }
+
             Vector2 snap = Vector2.Down * 8;
 
             _previousVelocity = _velocity;
@@ -104,7 +112,6 @@ namespace SupaLidlGame
             _velocity = MoveAndSlideWithSnap(_velocity, snap, Vector2.Up, stopOnSlope: true);
 
             _isOnFloor = IsOnFloor();
-
         }
 
         protected Vector2 Accelerate(Vector2 velocity, float delta)
@@ -129,12 +136,26 @@ namespace SupaLidlGame
         /// Applies an impulse. Velocity will be calculated based on impulse
         /// divided by the body's mass.
         /// </summary>
-        public void ApplyImpulse(Vector2 impulse)
+        /// <param name="impulse">Change in momentum expressed as a Vector2</param>
+        /// <param name="resetVelocity">Reset the entitiy's velocity to zero before applying the impulse</param>
+        public void ApplyImpulse(Vector2 impulse, bool resetVelocity = false)
         {
+            if (resetVelocity)
+            {
+                _velocity = Vector2.Zero;
+            }
             if (Mass > 0)
             {
                 _velocity += impulse / Mass;
             }
+        }
+
+        /// <summary>
+        /// Kills the enemy entitiy
+        /// </summary>
+        public virtual void Die()
+        {
+            IsDead = true;
         }
     }
 }

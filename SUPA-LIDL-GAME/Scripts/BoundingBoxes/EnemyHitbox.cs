@@ -2,7 +2,7 @@ namespace SupaLidlGame.BoundingBoxes
 {
     public class EnemyHitbox : Hitbox
     {
-        public Enemy EnemyParent => GetParent<Enemy>();
+        public Entities.Enemy EnemyParent => GetParent<Entities.Enemy>();
 
         public override void _Ready()
         {

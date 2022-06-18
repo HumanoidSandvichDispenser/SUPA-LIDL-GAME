@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SupaLidlGame
+namespace SupaLidlGame.Entities
 {
     public abstract class Enemy : HumanoidKinematicBody2D
     {
@@ -12,6 +12,7 @@ namespace SupaLidlGame
 
         public override void _Ready()
         {
+            // initialize with the correct components
             _stats = GetNode<Utils.Stats>("Stats");
 
             if (_stats == null)
@@ -31,6 +32,14 @@ namespace SupaLidlGame
             }
 
             base._Ready();
+        }
+
+        public override void _Process(float delta)
+        {
+            if (!IsDead)
+            {
+                Think();
+            }
         }
 
         public void _on_EnemyHitbox_ReceivedDamage(
@@ -58,6 +67,7 @@ namespace SupaLidlGame
                     {
                         if (knockbackVector == default)
                         {
+                            // direction to player
                             direction = (GlobalPosition -
                                     attacker.GlobalPosition).Normalized();
                         }
@@ -70,7 +80,7 @@ namespace SupaLidlGame
                     {
                         direction = knockbackOrigin - GlobalPosition;
                     }
-                    ApplyImpulse(direction * knockback);
+                    ApplyImpulse(direction * knockback, true);
                 }
                 if (_stats.Health <= 0)
                 {
@@ -79,12 +89,12 @@ namespace SupaLidlGame
             }
         }
 
-        /// <summary>
-        /// Kills the enemy entitiy
-        /// </summary>
-        public virtual void Die()
+        public override void Die()
         {
+            base.Die();
             QueueFree();
         }
+
+        public abstract void Think();
     }
 }

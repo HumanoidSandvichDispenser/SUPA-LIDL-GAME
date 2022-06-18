@@ -29,14 +29,15 @@ namespace SupaLidlGame.BoundingBoxes
 
         public override void _Ready()
         {
-            if (InflictorBody is null)
-            {
-                InflictorBody = GetNode<KinematicBody2D>(InflictorBodyPath);
-            }
+            InflictorBody = InflictorBody ??
+                    GetNode<KinematicBody2D>(InflictorBodyPath);
         }
 
         public void _on_Damagebox_area_entered(Area2D area)
         {
+            // a damagebox will look for a hitbox and inflicts damage to the
+            // hitbox, which should be handled by its parent entity.
+
             if (area is Hitbox hitbox)
             {
                 if (!_ignoreList.Contains(hitbox))

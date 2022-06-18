@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace SupaLidlGame
+namespace SupaLidlGame.Entities
 {
     public class FeelsDankCube : Enemy
     {
@@ -13,6 +13,13 @@ namespace SupaLidlGame
         public override void Die()
         {
             QueueFree();
+        }
+
+        public override void Think()
+        {
+            PlayerKinematicBody2D player = GlobalState.Player;
+            Vector2 moveTo = player.GlobalPosition - GlobalPosition;
+            _direction = moveTo.Normalized();
         }
     }
 }
