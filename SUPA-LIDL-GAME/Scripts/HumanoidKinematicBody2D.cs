@@ -76,6 +76,11 @@ namespace SupaLidlGame
                 return;
             }
 
+            if (IsMovementFrozen)
+            {
+                Direction = Vector2.Zero;
+            }
+
             Vector2 snap = Vector2.Down * 8;
 
             _previousVelocity = _velocity;
