@@ -96,13 +96,13 @@ namespace SupaLidlGame
             base._PhysicsProcess(delta);
 
             // detect velocity before landing
-            bool isJustLanding = _isOnFloor && _previousVelocity.y > 0;
-            bool isHardLand = isJustLanding && _previousVelocity.y > 480;
+            bool isJustLanding = _isOnFloor && PreviousVelocity.y > 0;
+            bool isHardLand = isJustLanding && PreviousVelocity.y > 480;
 
             // hardland
             if (isHardLand && _playerStats != null)
             {
-                _playerStats.Health -= (_previousVelocity.y - 440) / 4;
+                _playerStats.Health -= (PreviousVelocity.y - 440) / 4;
             }
 
             _animationTree.Set("parameters/conditions/is_hard_land", isHardLand);

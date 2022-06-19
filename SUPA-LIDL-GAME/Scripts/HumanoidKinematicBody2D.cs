@@ -18,12 +18,12 @@ namespace SupaLidlGame
 
         protected Vector2 _velocity = Vector2.Zero;
 
-        protected Vector2 _previousVelocity = Vector2.Zero;
-
         protected KinematicCollision2D _kinematicCollision;
 
-        public float AccelerationCoefficient { get; set; } = 768;
+        [Export]
+        public float AccelerationMagnitude { get; set; } = 768;
 
+        [Export]
         public float FrictionCoefficient { get; set; } = 512;
 
         [Export]
@@ -37,6 +37,8 @@ namespace SupaLidlGame
 
         public bool IsDead { get; set; } = false;
 
+        public Vector2 PreviousVelocity { get; protected set; } = Vector2.Zero;
+
         public bool IsMovementFrozen { get; protected set; } = false; // LUL
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace SupaLidlGame
         /// acceleration. forsenScoots
         /// </summary>
         public Vector2 Acceleration => _direction.Normalized() *
-                AccelerationCoefficient;
+                AccelerationMagnitude;
 
         public Vector2 Gravity => GRAVITY_CONSTANT * Vector2.Down;
 
@@ -83,7 +85,7 @@ namespace SupaLidlGame
 
             Vector2 snap = Vector2.Down * 8;
 
-            _previousVelocity = _velocity;
+            PreviousVelocity = _velocity;
 
             if (IsFlyingBody)
             {
