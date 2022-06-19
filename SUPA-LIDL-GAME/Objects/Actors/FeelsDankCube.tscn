@@ -34,7 +34,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.0666667, 0.133333, 0.2, 0.266667, 0.333333, 0.4, 0.466667, 0.533333, 0.6, 0.666667, 0.733333, 0.8, 0.866667, 0.933333, 1, 1.06667, 1.13333, 1.2, 1.26667, 1.33333, 1.4, 1.46667, 1.53333, 1.6, 1.66667, 1.73333, 1.8, 1.86667, 1.93333 ),
+"times": PoolRealArray( 0, 0.0666667, 0.133333, 0.2, 0.266667, 0.333333, 0.4, 0.466667, 0.533334, 0.6, 0.666667, 0.733334, 0.8, 0.866667, 0.933334, 1, 1.06667, 1.13333, 1.2, 1.26667, 1.33333, 1.4, 1.46667, 1.53333, 1.6, 1.66667, 1.73333, 1.8, 1.86667, 1.93333 ),
 "transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 ]
@@ -334,6 +334,8 @@ shader_param/sprite = ExtResource( 6 )
 
 [node name="FeelsDankCube" type="KinematicBody2D"]
 script = ExtResource( 3 )
+AccelerationMagnitude = 256.0
+FrictionCoefficient = 256.0
 MaxSpeed = 64.0
 IsFlyingBody = true
 Behavior = 1
@@ -351,7 +353,7 @@ scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 6
-frame = 7
+frame = 5
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 8 )

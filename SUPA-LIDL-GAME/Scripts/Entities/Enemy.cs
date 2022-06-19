@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using SupaLidlGame.Exceptions;
 using SupaLidlGame.Entities.AI;
 
@@ -15,15 +16,32 @@ namespace SupaLidlGame.Entities
 
         protected Node _deathParticles;
 
+        protected Thinker _thinker;
+
+        protected Sprite _sprite;
+
         public override void _Ready()
         {
             // initialize with the correct components
             _stats = GetNode<Utils.Stats>("Stats");
 
-            if (_stats == null)
+            if (_stats is null)
             {
                 throw new System.Exception(
                         "Enemy initialized without a Stats node.");
+            }
+
+            if (_thinker is null)
+            {
+                throw new BehaviorNotImplementedException("No thinker found.");
+            }
+
+            _sprite = GetNode<Sprite>("Sprite");
+
+            if (_sprite is null)
+            {
+                throw new System.Exception(
+                        "Enemy initialized without a Sprite node.");
             }
 
             _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
@@ -43,14 +61,21 @@ namespace SupaLidlGame.Entities
         {
             if (!IsDead)
             {
-                switch (Behavior)
+                _thinker.Think(delta, this);
+            }
+
+            if (Direction.x != 0 && !IsMovementFrozen)
+            {
+                Vector2 scale = _sprite.Scale;
+                if (Direction.x < 0)
                 {
-                    case AIType.Basic:
-                        ThinkBasic(delta);
-                        break;
-                    case AIType.JumpKing:
-                        break;
+                    scale.x = -Math.Abs(scale.x);
                 }
+                else if (Direction.x > 0)
+                {
+                    scale.x = Math.Abs(scale.x);
+                }
+                _sprite.Scale = scale;
             }
         }
 
@@ -106,35 +131,5 @@ namespace SupaLidlGame.Entities
             base.Die();
             QueueFree();
         }
-
-        protected virtual void ThinkBasic(float delta)
-        {
-            // move towards the player
-            PlayerKinematicBody2D player = GlobalState.Player;
-            Vector2 moveTo = player.GlobalPosition - GlobalPosition;
-            Direction = moveTo.Normalized();
-        }
-        
-        protected virtual void ThinkJumpKing(float delta)
-        {
-            
-        }
-
-        protected virtual void ThinkBounce(float delta)
-        {
-            throw new System.NotImplementedException();
-            KinematicCollision2D collision = GetLastSlideCollision();
-
-            if (collision != null)
-            {
-                Vector2 bounce = _previousVelocity.Bounce(collision.Normal);
-                ApplyImpulse(bounce.Normalized() * MaxSpeed * 2);
-            }
-        }
-
-        protected virtual void Think(float delta) =>
-                throw new BehaviorNotImplementedException(
-                "Implement custom behavior with `override void Think()`. " +
-                "Overriden method should not call the base method.");
     }
 }

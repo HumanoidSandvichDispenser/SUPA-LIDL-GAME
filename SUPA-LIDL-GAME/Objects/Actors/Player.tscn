@@ -336,7 +336,7 @@ tracks/3/keys = {
 "args": [ true ],
 "method": "set_IsAttacking"
 }, {
-"args": [ -50.0 ],
+"args": [ -128.0 ],
 "method": "Push"
 }, {
 "args": [ false ],

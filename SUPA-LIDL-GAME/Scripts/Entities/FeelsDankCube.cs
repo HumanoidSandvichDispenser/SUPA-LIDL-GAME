@@ -9,6 +9,7 @@ namespace SupaLidlGame.Entities
         public override void _Ready()
         {
             Behavior = AIType.Basic;
+            _thinker = new AI.BounceThinker();
             base._Ready();
         }
 
