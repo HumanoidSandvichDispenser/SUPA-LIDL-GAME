@@ -1,9 +1,10 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Objects/BoundingBoxes/EnemyHitbox.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Objects/Utils/Stats.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Entities/FeelsDankCube.cs" type="Script" id=3]
 [ext_resource path="res://Assets/Enemies/FeelsDankCube.png" type="Texture" id=4]
+[ext_resource path="res://Objects/BoundingBoxes/EnemyDamagebox.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Enemies/FeelsDankCube-first-frame.png" type="Texture" id=6]
 
 [sub_resource type="Animation" id=6]
@@ -332,7 +333,11 @@ shader_param/trail_divisor = null
 shader_param/gravity = null
 shader_param/sprite = ExtResource( 6 )
 
+[sub_resource type="CircleShape2D" id=18]
+radius = 8.0
+
 [node name="FeelsDankCube" type="KinematicBody2D"]
+collision_layer = 0
 script = ExtResource( 3 )
 AccelerationMagnitude = 256.0
 FrictionCoefficient = 256.0
@@ -353,7 +358,7 @@ scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 6
-frame = 5
+frame = 10
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 8 )
@@ -372,6 +377,15 @@ shape = SubResource( 15 )
 [node name="DeathParticles" type="Particles2D" parent="."]
 process_material = SubResource( 17 )
 
+[node name="EnemyDamagebox" parent="." instance=ExtResource( 5 )]
+Damage = 20.0
+Knockback = 250.0
+InflictorBodyPath = ".."
+
+[node name="CollisionShape2D" parent="EnemyDamagebox" index="0"]
+shape = SubResource( 18 )
+
 [connection signal="ReceivedDamage" from="EnemyHitbox" to="." method="_on_EnemyHitbox_ReceivedDamage"]
 
 [editable path="EnemyHitbox"]
+[editable path="EnemyDamagebox"]

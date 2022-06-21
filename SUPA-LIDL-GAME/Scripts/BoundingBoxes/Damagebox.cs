@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace SupaLidlGame.BoundingBoxes
 {
-
     public class Damagebox : Area2D
     {
-        private HashSet<Hitbox> _ignoreList = new HashSet<Hitbox>();
+        protected HashSet<Hitbox> _ignoreList = new HashSet<Hitbox>();
 
         [Export]
         public float Damage { get; set; } = 0;
@@ -33,7 +32,7 @@ namespace SupaLidlGame.BoundingBoxes
                     GetNode<KinematicBody2D>(InflictorBodyPath);
         }
 
-        public void _on_Damagebox_area_entered(Area2D area)
+        public virtual void _on_Damagebox_area_entered(Area2D area)
         {
             // a damagebox will look for a hitbox and inflicts damage to the
             // hitbox, which should be handled by its parent entity.

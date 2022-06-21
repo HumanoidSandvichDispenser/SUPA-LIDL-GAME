@@ -14,7 +14,7 @@ namespace SupaLidlGame
 
         private AnimationNodeStateMachinePlayback _animationState = null;
 
-        private Utils.PlayerStats _playerStats;
+        public Utils.PlayerStats PlayerStats { get; private set; }
 
         private BoundingBoxes.Damagebox _swordDamageBox;
 
@@ -39,13 +39,13 @@ namespace SupaLidlGame
             _animationTree = GetNode("AnimationTree") as AnimationTree;
             _animationState = _animationTree.Get("parameters/playback") as
                 AnimationNodeStateMachinePlayback;
-            _playerStats = GetNode("PlayerStats") as Utils.PlayerStats;
+            PlayerStats = GetNode("PlayerStats") as Utils.PlayerStats;
             _swordDamageBox = GetNode<BoundingBoxes.Damagebox>(
                     "CharacterSprite/SwordSprite/Damagebox");
 
             // set the sword properties when we load player stats
-            _swordDamageBox.Damage = _playerStats.SwordDamage;
-            _swordDamageBox.Knockback = _playerStats.SwordKnockback;
+            _swordDamageBox.Damage = PlayerStats.SwordDamage;
+            _swordDamageBox.Knockback = PlayerStats.SwordKnockback;
 
             _characterSprite.FlipH = false;
             _animationTree.Active = true;
@@ -100,9 +100,9 @@ namespace SupaLidlGame
             bool isHardLand = isJustLanding && PreviousVelocity.y > 480;
 
             // hardland
-            if (isHardLand && _playerStats != null)
+            if (isHardLand && PlayerStats != null)
             {
-                _playerStats.Health -= (PreviousVelocity.y - 440) / 4;
+                PlayerStats.Health -= (PreviousVelocity.y - 440) / 4;
             }
 
             _animationTree.Set("parameters/conditions/is_hard_land", isHardLand);
@@ -177,6 +177,50 @@ namespace SupaLidlGame
             _swordDamageBox.Damage = stats.SwordDamage;
             _swordDamageBox.Knockback = stats.SwordKnockback;
             
+        }
+
+        public void _on_Hitbox_ReceivedDamage(float damage,
+                KinematicBody2D attacker,
+                float knockback,
+                Vector2 knockbackOrigin = default,
+                Vector2 knockbackVector = default)
+        {
+            if (attacker is Entities.Enemy)
+            {
+                PlayerStats.Health -= damage;
+
+                if (PlayerStats.Health <= 0)
+                {
+                    Die();
+                }
+                else
+                {
+                    Vector2 direction;
+                    if (knockbackOrigin == default)
+                    {
+                        if (knockbackVector == default)
+                        {
+                            // direction to player
+                            direction = (GlobalPosition -
+                                    attacker.GlobalPosition);
+                        }
+                        else
+                        {
+                            direction = knockbackVector;
+                        }
+                    }
+                    else
+                    {
+                        direction = knockbackOrigin - GlobalPosition;
+                    }
+
+                    // launch the player up a bit
+                    direction = direction.Normalized() + Vector2.Up / 2;
+
+                    // yes, we're normalizing twice
+                    ApplyImpulse(direction * knockback, true);
+                }
+            }
         }
     }
 }

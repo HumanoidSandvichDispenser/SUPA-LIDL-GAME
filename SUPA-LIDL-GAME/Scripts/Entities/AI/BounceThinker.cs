@@ -30,7 +30,7 @@ namespace SupaLidlGame.Entities.AI
                 {
                     _resetDirectionTimeLeft += _resetDirectionTime / 4;
                 }
-                System.Diagnostics.Debug.WriteLine("Bounce!");
+
                 enemy.Direction = Vector2.Zero;
             }
             else

@@ -1,5 +1,3 @@
-using Godot;
-
 namespace SupaLidlGame
 {
     public static class GlobalState

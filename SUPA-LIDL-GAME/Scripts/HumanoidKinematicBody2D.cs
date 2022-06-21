@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Diagnostics;
 
 namespace SupaLidlGame
 {
@@ -96,6 +95,10 @@ namespace SupaLidlGame
             {
                 _velocity = Walk(delta, _velocity, ref snap);
             }
+
+            // if we are launched up with a high enough y velocity, remove snap
+            if (_velocity.y < -1)
+                snap = Vector2.Zero;
 
             _velocity = MoveAndSlideWithSnap(_velocity, snap, Vector2.Up, stopOnSlope: true);
             _kinematicCollision = GetLastSlideCollision();
