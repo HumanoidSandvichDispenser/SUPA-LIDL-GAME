@@ -13,7 +13,7 @@ namespace SupaLidlGame.Utils
         [Export]
         public float SwordRange
         {
-            get => SwordRange;
+            get => _swordRange;
             set
             {
                 _swordRange = value;
