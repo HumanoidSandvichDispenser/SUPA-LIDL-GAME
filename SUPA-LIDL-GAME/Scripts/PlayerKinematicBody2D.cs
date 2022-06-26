@@ -4,19 +4,19 @@ using SupaLidlGame.State;
 
 namespace SupaLidlGame
 {
-    public class PlayerKinematicBody2D : HumanoidKinematicBody2D
+    public sealed class PlayerKinematicBody2D : HumanoidKinematicBody2D
     {
         private Sprite _characterSprite = null;
-        
+
         private AnimationPlayer _animationPlayer = null;
 
         private AnimationTree _animationTree = null;
 
         private AnimationNodeStateMachinePlayback _animationState = null;
 
-        public Utils.PlayerStats PlayerStats { get; private set; }
+        private Utils.Inventory _inventory = null;
 
-        private BoundingBoxes.Damagebox _swordDamageBox;
+        public Utils.PlayerStats PlayerStats { get; private set; }
 
         public PlayerInputState InputState { get; set; } = PlayerInputState.None;
 
@@ -38,14 +38,9 @@ namespace SupaLidlGame
             _animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
             _animationTree = GetNode("AnimationTree") as AnimationTree;
             _animationState = _animationTree.Get("parameters/playback") as
-                AnimationNodeStateMachinePlayback;
+                    AnimationNodeStateMachinePlayback;
+            _inventory = GetNode<Utils.Inventory>("Inventory");
             PlayerStats = GetNode("PlayerStats") as Utils.PlayerStats;
-            _swordDamageBox = GetNode<BoundingBoxes.Damagebox>(
-                    "CharacterSprite/SwordSprite/Damagebox");
-
-            // set the sword properties when we load player stats
-            _swordDamageBox.Damage = PlayerStats.SwordDamage;
-            _swordDamageBox.Knockback = PlayerStats.SwordKnockback;
 
             _characterSprite.FlipH = false;
             _animationTree.Active = true;
@@ -66,7 +61,31 @@ namespace SupaLidlGame
                 if ((InputState & PlayerInputState.Attacking) != 0)
                 {
                     // this will freeze the player as it plays the animation
-                    _animationState.Travel("PlayerMelee");
+                    if (_inventory.SelectedItem is Items.Weapons.Weapon weapon)
+                    {
+                        Utils.WeaponStats stats;
+
+                        // attempt to fire the weapon, then let us handle using the weapon
+                        if (!((stats = weapon.TryAttack()) is null))
+                        {
+                            // we can attack
+                            switch (stats.Type)
+                            {
+                                case Utils.WeaponType.None:
+                                    // TODO: Replace with proper exception
+                                    throw new Exception();
+                                case Utils.WeaponType.Melee:
+                                    System.Diagnostics.Debug.WriteLine("Attacking");
+                                    _animationState.Travel("PlayerMelee");
+                                    break;
+                                case Utils.WeaponType.Ranged:
+                                    break;
+                                case Utils.WeaponType.Magic:
+                                    break;
+                            }
+                        }
+                    }
+                    
                 }
                 else if (Direction.x == 0 || Velocity.x == 0)
                 {
@@ -116,17 +135,21 @@ namespace SupaLidlGame
                     // use Scale instead of FlipX so children will also be
                     // flipped (e.g. sword sprite)
                     _characterSprite.Scale = new Vector2(-1, 1);
+                    //_characterSprite.FlipH = true;
+                    _inventory.Scale = new Vector2(-1, 1);
                    _directionFacing = Vector2.Left;
                 }
                 else if (Direction.x > 0)
                 {
                     _characterSprite.Scale = new Vector2(1, 1);
+                    //_characterSprite.FlipH = false;
+                    _inventory.Scale = new Vector2(1, 1);
                    _directionFacing = Vector2.Right;
                 }
             }
         }
 
-        protected void GrabInput()
+        private void GrabInput()
         {
             // get direction based on input
             _direction = Vector2.Zero;
@@ -152,6 +175,15 @@ namespace SupaLidlGame
             {
                 InputState |= PlayerInputState.Attacking;
             }
+
+            if (Input.IsActionJustPressed("attack2"))
+            {
+                //var sword = ResourceLoader.Load<PackedScene>("res://Scripts/Items/Weapons/BaseSword.tscn");
+                var sword = GD.Load<PackedScene>("res://Scripts/Items/Weapons/BaseSword.tscn");
+                var instance = sword.Instance<Items.Weapons.BaseSword>();
+                _inventory.AddItem(instance);
+                _inventory.SelectedItem = instance;
+            }
         }
 
         public void Push(float magnitude)
@@ -162,21 +194,20 @@ namespace SupaLidlGame
 
         public void _on_PlayerStats_HealthChanged(float oldHealth, float newHealth)
         {
+            if (!IsDead)
+            {
+                ShowDamageText(oldHealth - newHealth);
+            }
+
             if (newHealth <= 0)
             {
+                Die();
                 System.Diagnostics.Debug.WriteLine("You died!");
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine($"You lost {oldHealth - newHealth} health!");
             }
-        }
-
-        public void _on_PlayerStats_SwordStatsChanged(Utils.PlayerStats stats)
-        {
-            _swordDamageBox.Damage = stats.SwordDamage;
-            _swordDamageBox.Knockback = stats.SwordKnockback;
-            
         }
 
         public void _on_Hitbox_ReceivedDamage(float damage,
@@ -189,37 +220,30 @@ namespace SupaLidlGame
             {
                 PlayerStats.Health -= damage;
 
-                if (PlayerStats.Health <= 0)
+                Vector2 direction;
+                if (knockbackOrigin == default)
                 {
-                    Die();
-                }
-                else
-                {
-                    Vector2 direction;
-                    if (knockbackOrigin == default)
+                    if (knockbackVector == default)
                     {
-                        if (knockbackVector == default)
-                        {
-                            // direction to player
-                            direction = (GlobalPosition -
-                                    attacker.GlobalPosition);
-                        }
-                        else
-                        {
-                            direction = knockbackVector;
-                        }
+                        // direction to player
+                        direction = (GlobalPosition -
+                                attacker.GlobalPosition);
                     }
                     else
                     {
-                        direction = knockbackOrigin - GlobalPosition;
+                        direction = knockbackVector;
                     }
-
-                    // launch the player up a bit
-                    direction = direction.Normalized() + Vector2.Up / 2;
-
-                    // yes, we're normalizing twice
-                    ApplyImpulse(direction * knockback, true);
                 }
+                else
+                {
+                    direction = knockbackOrigin - GlobalPosition;
+                }
+
+                // launch the player up a bit
+                direction = direction.Normalized() + Vector2.Up / 2;
+
+                // yes, we're normalizing twice
+                ApplyImpulse(direction * knockback, true);
             }
         }
     }

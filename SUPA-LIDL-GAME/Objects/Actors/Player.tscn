@@ -1,20 +1,16 @@
-[gd_scene load_steps=58 format=2]
+[gd_scene load_steps=56 format=2]
 
 [ext_resource path="res://Scripts/PlayerKinematicBody2D.cs" type="Script" id=1]
 [ext_resource path="res://Animations/PlayerWalk.tres" type="Animation" id=2]
 [ext_resource path="res://Objects/Utils/PlayerStats.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Assets/Forsen/sword.png" type="Texture" id=4]
-[ext_resource path="res://Objects/BoundingBoxes/Damagebox.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Forsen/player.png" type="Texture" id=6]
 [ext_resource path="res://Animations/PlayerIdle.tres" type="Animation" id=7]
 [ext_resource path="res://Objects/BoundingBoxes/Hitbox.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Scripts/BoundingBoxes/Hitbox.cs" type="Script" id=9]
+[ext_resource path="res://Scripts/Utils/Inventory.cs" type="Script" id=10]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 5, 10 )
-
-[sub_resource type="CircleShape2D" id=91]
-radius = 20.0
 
 [sub_resource type="AnimationNodeAnimation" id=80]
 animation = "PlayerLand"
@@ -301,90 +297,6 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 17, 19, 21, 22 ]
 }
-tracks/1/type = "value"
-tracks/1/path = NodePath("CharacterSprite/SwordSprite:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.05, 0.1, 0.2 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
-"update": 1,
-"values": [ 0, 1, 2, 3 ]
-}
-tracks/2/type = "value"
-tracks/2/path = NodePath("CharacterSprite/SwordSprite:modulate")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray( 0, 0.15, 0.25 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0.752941 ), Color( 1, 1, 1, 0 ) ]
-}
-tracks/3/type = "method"
-tracks/3/path = NodePath(".")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0, 0.05, 0.25 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"values": [ {
-"args": [ true ],
-"method": "set_IsAttacking"
-}, {
-"args": [ -96.0 ],
-"method": "Push"
-}, {
-"args": [ false ],
-"method": "set_IsAttacking"
-} ]
-}
-tracks/4/type = "method"
-tracks/4/path = NodePath(".")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [ Vector2( 0, 0 ) ],
-"method": "set_Velocity"
-} ]
-}
-tracks/5/type = "value"
-tracks/5/path = NodePath("CharacterSprite/SwordSprite/Damagebox/CollisionShape2D:disabled")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ false, true ]
-}
-tracks/6/type = "method"
-tracks/6/path = NodePath("CharacterSprite/SwordSprite/Damagebox")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0.25 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "ResetIgnoreList"
-} ]
-}
 
 [sub_resource type="Animation" id=45]
 resource_name = "PlayerWalk"
@@ -456,7 +368,7 @@ tracks/1/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ true ]
+"values": [ false ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("Particles/LandParticles:emitting")
@@ -465,42 +377,6 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ true ]
-}
-tracks/3/type = "value"
-tracks/3/path = NodePath("CharacterSprite/SwordSprite:frame")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ 0 ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("CharacterSprite/SwordSprite:modulate")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
-}
-tracks/5/type = "value"
-tracks/5/path = NodePath("CharacterSprite/SwordSprite/Damagebox/CollisionShape2D:disabled")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
@@ -523,9 +399,8 @@ script = ExtResource( 1 )
 
 [node name="PlayerStats" parent="KinematicBody2D" instance=ExtResource( 3 )]
 
-[node name="Inventory" type="Node" parent="KinematicBody2D"]
-
-[node name="Weapon" type="Node" parent="KinematicBody2D/Inventory"]
+[node name="Inventory" type="Node2D" parent="KinematicBody2D"]
+script = ExtResource( 10 )
 
 [node name="Camera2D" type="Camera2D" parent="KinematicBody2D"]
 current = true
@@ -540,26 +415,7 @@ shape = SubResource( 1 )
 
 [node name="CharacterSprite" type="Sprite" parent="KinematicBody2D"]
 texture = ExtResource( 6 )
-flip_h = true
 hframes = 23
-
-[node name="SwordSprite" type="Sprite" parent="KinematicBody2D/CharacterSprite"]
-scale = Vector2( 1, 1.00858 )
-texture = ExtResource( 4 )
-offset = Vector2( 0, -4 )
-hframes = 4
-
-[node name="Damagebox" parent="KinematicBody2D/CharacterSprite/SwordSprite" instance=ExtResource( 5 )]
-collision_layer = 16
-collision_mask = 8
-Damage = 40.0
-Knockback = 150.0
-InflictorBodyPath = "../../.."
-
-[node name="CollisionShape2D" parent="KinematicBody2D/CharacterSprite/SwordSprite/Damagebox" index="0"]
-position = Vector2( 12, 0 )
-shape = SubResource( 91 )
-disabled = false
 
 [node name="AnimationTree" type="AnimationTree" parent="KinematicBody2D"]
 tree_root = SubResource( 36 )
@@ -589,6 +445,7 @@ anims/RESET = SubResource( 6 )
 
 [node name="LandParticles" type="CPUParticles2D" parent="KinematicBody2D/Particles"]
 position = Vector2( 0, 12 )
+emitting = false
 amount = 20
 one_shot = true
 explosiveness = 0.8
@@ -612,8 +469,6 @@ script = ExtResource( 9 )
 shape = SubResource( 92 )
 
 [connection signal="HealthChanged" from="KinematicBody2D/PlayerStats" to="KinematicBody2D" method="_on_PlayerStats_HealthChanged"]
-[connection signal="SwordStatsChanged" from="KinematicBody2D/PlayerStats" to="KinematicBody2D" method="_on_PlayerStats_SwordStatsChanged"]
 [connection signal="ReceivedDamage" from="KinematicBody2D/Hitbox" to="KinematicBody2D" method="_on_Hitbox_ReceivedDamage"]
 
-[editable path="KinematicBody2D/CharacterSprite/SwordSprite/Damagebox"]
 [editable path="KinematicBody2D/Hitbox"]

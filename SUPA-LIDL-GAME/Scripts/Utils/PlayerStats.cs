@@ -4,19 +4,19 @@ namespace SupaLidlGame.Utils
 {
     public class PlayerStats : Stats
     {
-        protected float _swordRange = 100;
+        protected float _meleeRange = 100;
 
         protected float _swordDamage = 20;
 
         protected float _swordKnockback = 150;
 
         [Export]
-        public float SwordRange
+        public float MeleeRange
         {
-            get => _swordRange;
+            get => _meleeRange;
             set
             {
-                _swordRange = value;
+                _meleeRange = value;
                 EmitSignal("SwordStatsChanged", this);
             }
         }

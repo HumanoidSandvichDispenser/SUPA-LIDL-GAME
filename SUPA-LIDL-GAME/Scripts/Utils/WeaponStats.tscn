@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/Utils/WeaponStats.cs" type="Script" id=1]
+
+[node name="WeaponStats" type="Node"]
+script = ExtResource( 1 )
+Knockback = nan
+Velocity = nan

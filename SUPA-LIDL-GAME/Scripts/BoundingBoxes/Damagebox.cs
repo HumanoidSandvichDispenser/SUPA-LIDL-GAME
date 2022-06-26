@@ -28,8 +28,11 @@ namespace SupaLidlGame.BoundingBoxes
 
         public override void _Ready()
         {
-            InflictorBody = InflictorBody ??
-                    GetNode<KinematicBody2D>(InflictorBodyPath);
+            if (InflictorBodyPath != default)
+            {
+                InflictorBody = InflictorBody ??
+                        GetNode<KinematicBody2D>(InflictorBodyPath);
+            }
         }
 
         public virtual void _on_Damagebox_area_entered(Area2D area)

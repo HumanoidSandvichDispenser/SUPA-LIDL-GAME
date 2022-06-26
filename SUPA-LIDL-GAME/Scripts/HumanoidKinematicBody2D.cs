@@ -217,5 +217,15 @@ namespace SupaLidlGame
         {
             IsDead = true;
         }
+
+        public void ShowDamageText(float damage)
+        {
+            var damageTextScene = ResourceLoader.Load<PackedScene>(
+                    "res://Scripts/UI/FloatingText.tscn");
+            var damageText = damageTextScene.Instance<UI.FloatingText>();
+            damageText.Text = Math.Round(damage).ToString();
+            damageText.GlobalPosition = GlobalPosition + Vector2.Up * 8;
+            GetTree().Root.AddChild(damageText);
+        }
     }
 }

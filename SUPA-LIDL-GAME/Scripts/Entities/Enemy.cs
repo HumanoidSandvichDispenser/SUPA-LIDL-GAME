@@ -88,6 +88,7 @@ namespace SupaLidlGame.Entities
         {
             if (_stats != null)
             {
+                ShowDamageText(damage);
                 _stats.Health -= damage;
 
                 // to apply knockback, there must be an attacker,
