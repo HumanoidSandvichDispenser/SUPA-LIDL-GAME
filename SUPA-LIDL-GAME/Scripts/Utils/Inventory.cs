@@ -27,7 +27,14 @@ namespace SupaLidlGame.Utils
                         RemoveChild(_selectedItem);
                     }
                     _selectedItem = value;
-                    _selectedItem.Equip();
+
+                    // only equip if ready (set inflictor and other stuff)
+                    // if the item is not ready, it will equip once it is ready
+                    if (_selectedItem.IsReady)
+                    {
+                        _selectedItem.Equip();
+                    }
+
                     AddChild(value);
                 }
                 else
@@ -62,7 +69,6 @@ namespace SupaLidlGame.Utils
 
         public override void _Ready()
         {
-
         }
     }
 }

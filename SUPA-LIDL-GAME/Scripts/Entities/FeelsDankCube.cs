@@ -1,14 +1,9 @@
-using Godot;
-using System;
-using SupaLidlGame.Entities.AI;
-
 namespace SupaLidlGame.Entities
 {
     public class FeelsDankCube : Enemy
     {
         public override void _Ready()
         {
-            Behavior = AIType.Basic;
             _thinker = new AI.BounceThinker();
             base._Ready();
         }

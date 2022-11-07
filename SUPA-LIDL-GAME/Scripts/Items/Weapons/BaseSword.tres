@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/Utils/WeaponStats.cs" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+Damage = 35.0
+UseTime = 0.4
+DamageTime = 0.1
+Range = 20.0
+Knockback = 20.0
+Velocity = 0.0
+Type = 1

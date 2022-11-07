@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=2]
+[gd_scene load_steps=61 format=2]
 
 [ext_resource path="res://Scripts/PlayerKinematicBody2D.cs" type="Script" id=1]
 [ext_resource path="res://Animations/PlayerWalk.tres" type="Animation" id=2]
@@ -77,8 +77,22 @@ animation = "PlayerJumping"
 [sub_resource type="AnimationNodeAnimation" id=68]
 animation = "PlayerLand"
 
-[sub_resource type="AnimationNodeAnimation" id=87]
-animation = "PlayerMelee"
+[sub_resource type="AnimationNodeAnimation" id=95]
+animation = "PlayerMeleeLateral"
+
+[sub_resource type="AnimationNodeAnimation" id=96]
+animation = "PlayerMeleeUp"
+
+[sub_resource type="AnimationNodeAnimation" id=97]
+animation = "PlayerMeleeDown"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id=98]
+blend_point_0/node = SubResource( 95 )
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource( 96 )
+blend_point_1/pos = -1.0
+blend_point_2/node = SubResource( 97 )
+blend_point_2/pos = 1.0
 
 [sub_resource type="AnimationNodeAnimation" id=69]
 animation = "PlayerWalk"
@@ -126,11 +140,11 @@ advance_condition = "is_hard_land"
 [sub_resource type="AnimationNodeStateMachineTransition" id=84]
 advance_condition = "is_soft_land"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=88]
+[sub_resource type="AnimationNodeStateMachineTransition" id=99]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=89]
+[sub_resource type="AnimationNodeStateMachineTransition" id=100]
 switch_mode = 2
-auto_advance = true
+advance_condition = "is_not_attacking"
 
 [sub_resource type="AnimationNodeStateMachine" id=36]
 states/BlendSpace1D/node = SubResource( 82 )
@@ -149,15 +163,15 @@ states/PlayerJumping/node = SubResource( 67 )
 states/PlayerJumping/position = Vector2( 195, 300 )
 states/PlayerLand/node = SubResource( 68 )
 states/PlayerLand/position = Vector2( 195, -6.64324 )
-states/PlayerMelee/node = SubResource( 87 )
-states/PlayerMelee/position = Vector2( 520.412, -136.095 )
+states/PlayerMelee/node = SubResource( 98 )
+states/PlayerMelee/position = Vector2( 421.023, -105.501 )
 states/PlayerWalk/node = SubResource( 69 )
 states/PlayerWalk/position = Vector2( 802, 47 )
 states/Run/node = SubResource( 35 )
 states/Run/position = Vector2( 1026, 278 )
-transitions = [ "PlayerJump", "PlayerJumping", SubResource( 70 ), "PlayerJumping", "PlayerFalling", SubResource( 71 ), "PlayerIdle", "PlayerWalk", SubResource( 72 ), "PlayerWalk", "PlayerIdle", SubResource( 73 ), "PlayerIdle", "PlayerJump", SubResource( 74 ), "PlayerWalk", "PlayerJump", SubResource( 75 ), "PlayerLand", "PlayerIdle", SubResource( 77 ), "PlayerIdle", "PlayerFalling", SubResource( 78 ), "PlayerWalk", "PlayerFalling", SubResource( 79 ), "PlayerFalling", "PlayerLand", SubResource( 83 ), "PlayerFalling", "PlayerIdle", SubResource( 84 ), "PlayerIdle", "PlayerMelee", SubResource( 88 ), "PlayerMelee", "PlayerIdle", SubResource( 89 ) ]
+transitions = [ "PlayerJump", "PlayerJumping", SubResource( 70 ), "PlayerJumping", "PlayerFalling", SubResource( 71 ), "PlayerIdle", "PlayerWalk", SubResource( 72 ), "PlayerWalk", "PlayerIdle", SubResource( 73 ), "PlayerIdle", "PlayerJump", SubResource( 74 ), "PlayerWalk", "PlayerJump", SubResource( 75 ), "PlayerLand", "PlayerIdle", SubResource( 77 ), "PlayerIdle", "PlayerFalling", SubResource( 78 ), "PlayerWalk", "PlayerFalling", SubResource( 79 ), "PlayerFalling", "PlayerLand", SubResource( 83 ), "PlayerFalling", "PlayerIdle", SubResource( 84 ), "PlayerIdle", "PlayerMelee", SubResource( 99 ), "PlayerMelee", "PlayerIdle", SubResource( 100 ) ]
 start_node = "PlayerIdle"
-graph_offset = Vector2( -187.588, 25.1794 )
+graph_offset = Vector2( -443.977, -161.501 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=37]
 
@@ -180,7 +194,8 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id=61]
 resource_name = "PlayerJump"
-length = 0.3
+length = 0.15
+step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("CharacterSprite:frame")
 tracks/0/interp = 1
@@ -188,7 +203,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2 ),
+"times": PoolRealArray( 0, 0.05, 0.1 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 1,
 "values": [ 7, 8, 9 ]
@@ -282,9 +297,8 @@ tracks/4/keys = {
 }
 
 [sub_resource type="Animation" id=86]
-resource_name = "PlayerMelee"
-length = 0.25
-step = 0.05
+resource_name = "PlayerMeleeDown"
+length = 0.4
 tracks/0/type = "value"
 tracks/0/path = NodePath("CharacterSprite:frame")
 tracks/0/interp = 1
@@ -292,10 +306,42 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.05, 0.1, 0.2 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 17, 19, 21, 22 ]
+"values": [ 17, 18 ]
+}
+
+[sub_resource type="Animation" id=93]
+resource_name = "PlayerMeleeLateral"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("CharacterSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 19, 20 ]
+}
+
+[sub_resource type="Animation" id=94]
+resource_name = "PlayerMeleeUp"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("CharacterSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 21, 22 ]
 }
 
 [sub_resource type="Animation" id=45]
@@ -398,6 +444,8 @@ collision_layer = 2
 script = ExtResource( 1 )
 
 [node name="PlayerStats" parent="KinematicBody2D" instance=ExtResource( 3 )]
+Class = 0
+MaxJumps = 1
 
 [node name="Inventory" type="Node2D" parent="KinematicBody2D"]
 script = ExtResource( 10 )
@@ -422,11 +470,13 @@ tree_root = SubResource( 36 )
 anim_player = NodePath("../AnimationPlayer")
 parameters/playback = SubResource( 37 )
 parameters/conditions/is_hard_land = false
+parameters/conditions/is_not_attacking = false
 parameters/conditions/is_soft_land = false
 parameters/conditions/is_y_velocity_positive = false
-parameters/BlendSpace1D/blend_position = 0.047041
+parameters/BlendSpace1D/blend_position = 0.0
 parameters/Jump/blend_position = 1.0
 parameters/Move/blend_position = Vector2( -0.917609, -0.128954 )
+parameters/PlayerMelee/blend_position = 0
 parameters/Run/blend_position = 5.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="KinematicBody2D"]
@@ -435,7 +485,9 @@ anims/PlayerIdle = ExtResource( 7 )
 anims/PlayerJump = SubResource( 61 )
 anims/PlayerJumping = SubResource( 62 )
 anims/PlayerLand = SubResource( 63 )
-anims/PlayerMelee = SubResource( 86 )
+anims/PlayerMeleeDown = SubResource( 86 )
+anims/PlayerMeleeLateral = SubResource( 93 )
+anims/PlayerMeleeUp = SubResource( 94 )
 anims/PlayerWalk = SubResource( 45 )
 anims/PlayerWalkLeft = SubResource( 39 )
 anims/PlayerWalkRight = ExtResource( 2 )
@@ -466,6 +518,7 @@ collision_mask = 32
 script = ExtResource( 9 )
 
 [node name="CollisionShape2D" parent="KinematicBody2D/Hitbox" index="0"]
+position = Vector2( 0, -2 )
 shape = SubResource( 92 )
 
 [connection signal="HealthChanged" from="KinematicBody2D/PlayerStats" to="KinematicBody2D" method="_on_PlayerStats_HealthChanged"]

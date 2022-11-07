@@ -7,14 +7,12 @@ namespace SupaLidlGame.Entities
 {
     public abstract class Enemy : HumanoidKinematicBody2D
     {
-        [Export]
-        public AIType Behavior { get; set; } = AIType.Basic;
-
-        protected Utils.Stats _stats;
+        //protected Utils.Stats _stats;
+        public Utils.Stats Stats;
 
         protected AnimationPlayer _animationPlayer;
 
-        protected Node _deathParticles;
+        protected OneShotParticles _deathParticles;
 
         protected Thinker _thinker;
 
@@ -23,13 +21,7 @@ namespace SupaLidlGame.Entities
         public override void _Ready()
         {
             // initialize with the correct components
-            _stats = GetNode<Utils.Stats>("Stats");
-
-            if (_stats is null)
-            {
-                throw new System.Exception(
-                        "Enemy initialized without a Stats node.");
-            }
+            Stats = GetNode<Utils.Stats>("Stats");
 
             if (_thinker is null)
             {
@@ -46,12 +38,10 @@ namespace SupaLidlGame.Entities
 
             _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 
-            _deathParticles = GetNode("DeathParticles");
-            if (!(_deathParticles is Particles2D || _deathParticles is
-                        CPUParticles2D) || _deathParticles is null)
+            _deathParticles = GetNode<OneShotParticles>("DeathParticles");
+            if (_deathParticles is null)
             {
-                throw new System.Exception("DeathParticles is not a Particles2D " +
-                        "or CPUParticles2D node.");
+                throw new System.Exception("DeathParticles is not a Particles2D");
             }
 
             base._Ready();
@@ -86,10 +76,10 @@ namespace SupaLidlGame.Entities
                 Vector2 knockbackOrigin = default,
                 Vector2 knockbackVector = default)
         {
-            if (_stats != null)
+            if (!(Stats is null))
             {
                 ShowDamageText(damage);
-                _stats.Health -= damage;
+                Stats.Health -= damage;
 
                 // to apply knockback, there must be an attacker,
                 // the knockback force must be non-zero
@@ -120,7 +110,7 @@ namespace SupaLidlGame.Entities
                     }
                     ApplyImpulse(direction * knockback, true);
                 }
-                if (_stats.Health <= 0)
+                if (Stats.Health <= 0)
                 {
                     Die();
                 }

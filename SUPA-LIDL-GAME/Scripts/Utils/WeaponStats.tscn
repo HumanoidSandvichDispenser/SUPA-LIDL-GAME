@@ -4,5 +4,3 @@
 
 [node name="WeaponStats" type="Node"]
 script = ExtResource( 1 )
-Knockback = nan
-Velocity = nan

@@ -78,6 +78,10 @@ attack2={
 2d_physics/layer_5="PlayerDamageobx"
 2d_physics/layer_6="EnemyDamagebox"
 
+[mono]
+
+project/assembly_name="SUPA-LIDL-GAME"
+
 [physics]
 
 common/enable_pause_aware_picking=true

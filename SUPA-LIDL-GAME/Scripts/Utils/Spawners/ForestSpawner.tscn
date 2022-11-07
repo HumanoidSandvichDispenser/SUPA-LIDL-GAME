@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Utils/Spawners/ForestSpawner.cs" type="Script" id=1]
+[ext_resource path="res://Objects/Actors/Bat.tscn" type="PackedScene" id=2]
+
+[node name="ForestSpawner" type="Position2D"]
+script = ExtResource( 1 )
+Actors = [ ExtResource( 2 ) ]

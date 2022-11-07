@@ -13,6 +13,8 @@ namespace SupaLidlGame
 
         protected bool _isOnFloor = false;
 
+        protected Vector2 _target = Vector2.Zero;
+
         protected Vector2 _direction = Vector2.Zero;
 
         protected Vector2 _velocity = Vector2.Zero;
@@ -49,6 +51,25 @@ namespace SupaLidlGame
                 AccelerationMagnitude;
 
         public Vector2 Gravity => GRAVITY_CONSTANT * Vector2.Down;
+
+        public Vector2 Target
+        {
+            get => _target;
+            set => _target = value;
+        }
+
+        public float TargetBlend
+        {
+            get
+            {
+                float blend = Target.Normalized().y;
+                if (Math.Abs(blend) < 0.5f)
+                {
+                    blend = 0;
+                }
+                return blend;
+            }
+        }
 
         public Vector2 Direction
         {
@@ -89,6 +110,8 @@ namespace SupaLidlGame
             if (IsFlyingBody)
             {
                 _velocity = Fly(delta, _velocity);
+
+                // no snap if flying
                 snap = Vector2.Zero;
             }
             else

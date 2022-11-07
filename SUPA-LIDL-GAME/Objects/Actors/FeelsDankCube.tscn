@@ -343,7 +343,6 @@ AccelerationMagnitude = 256.0
 FrictionCoefficient = 256.0
 MaxSpeed = 64.0
 IsFlyingBody = true
-Behavior = 1
 
 [node name="Stats" parent="." instance=ExtResource( 2 )]
 
@@ -358,7 +357,7 @@ scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 4 )
 hframes = 5
 vframes = 6
-frame = 10
+frame = 20
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 8 )

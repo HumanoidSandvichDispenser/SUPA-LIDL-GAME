@@ -26,9 +26,12 @@ namespace SupaLidlGame.BoundingBoxes
         [Export]
         public string InflictorBodyPath { get; set; }
 
+        [Export]
+        public bool Enabled { get; set; } = true;
+
         public override void _Ready()
         {
-            if (InflictorBodyPath != default)
+            if (InflictorBodyPath != "")
             {
                 InflictorBody = InflictorBody ??
                         GetNode<KinematicBody2D>(InflictorBodyPath);
@@ -39,6 +42,11 @@ namespace SupaLidlGame.BoundingBoxes
         {
             // a damagebox will look for a hitbox and inflicts damage to the
             // hitbox, which should be handled by its parent entity.
+
+            if (!Enabled)
+            {
+                return;
+            }
 
             if (area is Hitbox hitbox)
             {

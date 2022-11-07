@@ -2,16 +2,22 @@ using Godot;
 
 namespace SupaLidlGame.Utils
 {
-    public class WeaponStats : Node
+    public class WeaponStats : Resource
     {
         [Export]
         public float Damage { get; set; } = 0;
 
         /// <summary>
-        /// Delay after using a weapon's animation before being able to use it again.
+        /// Time it takes to reuse/refire a weapon.
         /// </summary>
         [Export]
         public float UseTime { get; set; } = 0;
+
+        /// <summary>
+        /// Duration the damagebox will be active. Only applies to melee weapons.
+        /// </summary>
+        [Export]
+        public float DamageTime { get; set; } = 0.1f;
 
         /// <summary>
         /// Range of the weapon (size of the damagebox).

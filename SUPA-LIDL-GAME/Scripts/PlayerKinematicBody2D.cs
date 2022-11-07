@@ -26,7 +26,7 @@ namespace SupaLidlGame
 
         public bool IsOnAttackCooldown { get; set; } = false;
 
-        private Vector2 _directionFacing = Vector2.Zero;
+        private Vector2 _directionFacing = Vector2.Right;
 
         public override void _Ready()
         {
@@ -40,7 +40,7 @@ namespace SupaLidlGame
             _animationState = _animationTree.Get("parameters/playback") as
                     AnimationNodeStateMachinePlayback;
             _inventory = GetNode<Utils.Inventory>("Inventory");
-            PlayerStats = GetNode("PlayerStats") as Utils.PlayerStats;
+            PlayerStats = GetNode<Utils.PlayerStats>("PlayerStats");
 
             _characterSprite.FlipH = false;
             _animationTree.Active = true;
@@ -56,38 +56,54 @@ namespace SupaLidlGame
 
         public override void _PhysicsProcess(float delta)
         {
-            if (_isOnFloor)
+            if ((InputState & PlayerInputState.Attacking) != 0)
             {
-                if ((InputState & PlayerInputState.Attacking) != 0)
+                // this will freeze the player as it plays the animation
+                if (_inventory.SelectedItem is Items.Weapons.Weapon weapon)
                 {
-                    // this will freeze the player as it plays the animation
-                    if (_inventory.SelectedItem is Items.Weapons.Weapon weapon)
-                    {
-                        Utils.WeaponStats stats;
+                    Vector2 mousePosition = GetLocalMousePosition();
+                    Utils.WeaponStats stats = weapon.TryAttack(mousePosition);
 
-                        // attempt to fire the weapon, then let us handle using the weapon
-                        if (!((stats = weapon.TryAttack()) is null))
+                    // we can attack
+                    if (!(stats is null))
+                    {
+                        // face towards the direction we are attacking
+                        if (mousePosition.x < 0)
                         {
-                            // we can attack
-                            switch (stats.Type)
-                            {
-                                case Utils.WeaponType.None:
-                                    // TODO: Replace with proper exception
-                                    throw new Exception();
-                                case Utils.WeaponType.Melee:
-                                    System.Diagnostics.Debug.WriteLine("Attacking");
-                                    _animationState.Travel("PlayerMelee");
-                                    break;
-                                case Utils.WeaponType.Ranged:
-                                    break;
-                                case Utils.WeaponType.Magic:
-                                    break;
-                            }
+                            Direction = Vector2.Left;
+                        }
+                        else
+                        {
+                            Direction = Vector2.Right;
+                        }
+
+                        FaceDirection(Direction);
+
+                        switch (stats.Type)
+                        {
+                            case Utils.WeaponType.None:
+                                // TODO: Replace with proper exception
+                                throw new Exception();
+                            case Utils.WeaponType.Melee:
+                                if (Velocity.y > 0)
+                                {
+                                    GD.Print(Velocity);
+                                    Velocity = Vector2.Zero;
+                                }
+                                _animationState.Travel("PlayerMelee");
+                                break;
+                            case Utils.WeaponType.Ranged:
+                                break;
+                            case Utils.WeaponType.Magic:
+                                break;
                         }
                     }
-                    
                 }
-                else if (Direction.x == 0 || Velocity.x == 0)
+
+            }
+            else if (_isOnFloor)
+            {
+                if (Direction.x == 0 || Velocity.x == 0)
                 {
                     _animationState.Travel("PlayerIdle");
                 }
@@ -127,26 +143,9 @@ namespace SupaLidlGame
             _animationTree.Set("parameters/conditions/is_hard_land", isHardLand);
             _animationTree.Set("parameters/conditions/is_soft_land", isJustLanding && !isHardLand);
             _animationTree.Set("parameters/conditions/is_y_velocity_positive", Velocity.y > 0);
+            _animationTree.Set("parameters/conditions/is_not_attacking", !IsAttacking);
 
-            if (Direction.x != 0 && !IsMovementFrozen)
-            {
-                if (Direction.x < 0)
-                {
-                    // use Scale instead of FlipX so children will also be
-                    // flipped (e.g. sword sprite)
-                    _characterSprite.Scale = new Vector2(-1, 1);
-                    //_characterSprite.FlipH = true;
-                    _inventory.Scale = new Vector2(-1, 1);
-                   _directionFacing = Vector2.Left;
-                }
-                else if (Direction.x > 0)
-                {
-                    _characterSprite.Scale = new Vector2(1, 1);
-                    //_characterSprite.FlipH = false;
-                    _inventory.Scale = new Vector2(1, 1);
-                   _directionFacing = Vector2.Right;
-                }
-            }
+            FaceDirection(Direction);
         }
 
         private void GrabInput()
@@ -181,15 +180,54 @@ namespace SupaLidlGame
                 //var sword = ResourceLoader.Load<PackedScene>("res://Scripts/Items/Weapons/BaseSword.tscn");
                 var sword = GD.Load<PackedScene>("res://Scripts/Items/Weapons/BaseSword.tscn");
                 var instance = sword.Instance<Items.Weapons.BaseSword>();
+                instance.Inflictor = this;
                 _inventory.AddItem(instance);
                 _inventory.SelectedItem = instance;
             }
         }
 
+        public override void _Input(InputEvent @event)
+        {
+            // this is for testing
+            if (@event is InputEventMouseMotion motion)
+            {
+                Target = GetLocalMousePosition();
+                float blend = Target.Normalized().y;
+                if (System.Math.Abs(blend) < 0.5f)
+                {
+                    blend = 0;
+                }
+                _animationTree.Set("parameters/PlayerMelee/blend_position",
+                        blend);
+            }
+        }
+
         public void Push(float magnitude)
         {
-            Vector2 direction = new Vector2(_directionFacing.x, 0);
-            ApplyImpulse(direction * magnitude);
+            ApplyImpulse(_directionFacing * magnitude);
+        }
+
+        private void FaceDirection(Vector2 direction)
+        {
+            if (direction.x != 0 && !IsMovementFrozen)
+            {
+                if (direction.x < 0)
+                {
+                    // use Scale instead of FlipX so children will also be
+                    // flipped (e.g. sword sprite)
+                    _characterSprite.Scale = new Vector2(-1, 1);
+                    //_characterSprite.FlipH = true;
+                    _inventory.Scale = new Vector2(-1, 1);
+                   _directionFacing = Vector2.Left;
+                }
+                else if (direction.x > 0)
+                {
+                    _characterSprite.Scale = new Vector2(1, 1);
+                    //_characterSprite.FlipH = false;
+                    _inventory.Scale = new Vector2(1, 1);
+                   _directionFacing = Vector2.Right;
+                }
+            }
         }
 
         public void _on_PlayerStats_HealthChanged(float oldHealth, float newHealth)
@@ -216,7 +254,8 @@ namespace SupaLidlGame
                 Vector2 knockbackOrigin = default,
                 Vector2 knockbackVector = default)
         {
-            if (attacker is Entities.Enemy)
+            GD.Print("Received damage");
+            //if (attacker is Entities.Enemy)
             {
                 PlayerStats.Health -= damage;
 

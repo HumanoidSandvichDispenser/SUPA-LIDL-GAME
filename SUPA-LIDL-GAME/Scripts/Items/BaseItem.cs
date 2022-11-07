@@ -10,6 +10,13 @@ namespace SupaLidlGame.Items
         [Export]
         public string Description  { get; set; }
 
+        public bool IsReady { get; private set; } = false;
+
+        public override void _Ready()
+        {
+            IsReady = true;
+        }
+
         public abstract void Equip();
 
         public abstract void Unequip();

@@ -16,7 +16,6 @@ namespace SupaLidlGame.BoundingBoxes
 
                 if (_ignoreList.Count == 0)
                 {
-                    System.Diagnostics.Debug.WriteLine("Enemy hit!");
                     base._on_Damagebox_area_entered(area);
 
                     // reset ignorelist after 500ms
